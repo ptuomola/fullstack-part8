@@ -2,7 +2,7 @@ import React from 'react'
 import { gql } from 'apollo-boost'
 import { useQuery } from '@apollo/react-hooks'
 
-const ALL_BOOKS = gql`
+export const ALL_BOOKS = gql`
 {
   allBooks  {
     title
