@@ -8,7 +8,8 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
 
   const handleError = (error) => {
-    setErrorMessage(error.graphQLErrors[0].message)
+    console.log(error)
+    setErrorMessage(error.message)
     setTimeout(() => {
       setErrorMessage(null)
     }, 10000)
@@ -29,7 +30,7 @@ const App = () => {
       }
 
       <Authors
-        show={page === 'authors'} 
+        show={page === 'authors'} handleError={handleError}
       />
 
       <Books

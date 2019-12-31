@@ -165,7 +165,7 @@ const resolvers = {
       if(typeof author === 'undefined') 
         return null
 
-      const updatedAuthor = { born: args.setBornTo, ...author }
+      const updatedAuthor = {  ...author, born: args.setBornTo }
       console.log('updated author', updatedAuthor)
 
       authors = authors.map(author => author.name === args.name ? updatedAuthor : author)

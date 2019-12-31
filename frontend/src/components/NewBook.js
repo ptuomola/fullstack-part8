@@ -43,8 +43,6 @@ const NewBook = (props) => {
 
     const publishYear = parseInt(published)
 
-    console.log(publishYear)
-
     await addBook({
       variables: { title, published: publishYear, author, genres }
     })
