@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { gql } from 'apollo-boost'
 import { useQuery, useMutation } from '@apollo/react-hooks'
+import Select from 'react-select';
 
 export const ALL_AUTHORS = gql`
 {
@@ -47,8 +48,10 @@ const Authors = (props) => {
   const submit = async (e) => {
     e.preventDefault()
 
+    const authorName = name.value
+
     await editYear({
-      variables: { name, year }
+      variables: { name: authorName, year }
     })
 
     setName('')
@@ -83,7 +86,7 @@ const Authors = (props) => {
       <p></p>
       <h2>Set birthyear</h2>
       <form onSubmit={submit}>
-        name <input value={name} onChange={({ target }) => setName(target.value)}/><br/>
+        <Select value={name} onChange={(selectedOption) => { setName(selectedOption) } } options={authors.map(a => { return { value: a.name, label: a.name } } )} />
         born <input value={year} onChange={({ target }) => setYear(parseInt(target.value))}/><br/>
         <button type='submit'>update author</button>
       </form>
