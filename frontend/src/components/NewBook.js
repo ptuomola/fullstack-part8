@@ -14,7 +14,9 @@ mutation createBook($title: String!, $published: Int!, $author: String!, $genres
   ) {
     title
     published
-    author
+    author {
+      name
+    }
     genres
     id
   }
@@ -52,6 +54,7 @@ const NewBook = (props) => {
     setAuhtor('')
     setGenres([])
     setGenre('')
+    props.setPage('books')
   }
 
   const addGenre = () => {

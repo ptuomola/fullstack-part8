@@ -117,6 +117,8 @@ const resolvers = {
     addBook: async (root, args, context) => {
       const currentUser = context.currentUser
 
+      console.log('in addbook', args)
+
       if (!currentUser) {
         throw new AuthenticationError("not authenticated")
       }
