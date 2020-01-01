@@ -83,21 +83,26 @@ const resolvers = {
     hello: () => { return "world" },
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
-    allBooks: (root, args) => {
-      return Book.find({})
-/*
-      if(!args.author && !args.genre) 
-        return books
+    allBooks: async (root, args) => {
+      console.log('called with', args)
+      if(args.author) 
+      {
+        const authorObject = await Author.findOne({ name: args.author })
+        if(!authorObject) return null
+        console.log(authorObject)
 
-      retval = books
-      if(args.author)
-        retval = retval.filter(book => book.author === args.author)
-
-      if(args.genre)
-        retval = retval.filter(book => book.genres.includes(args.genre)) 
-      
-      return retval
-*/
+        if(args.genre)
+          return Book.find({ genres: args.genre, author: authorObject })
+        else
+          return Book.find({ author: authorObject })
+      }
+      else
+      {
+        if(args.genre)
+          return Book.find({ genres: args.genre })
+        else
+          return Book.find({})
+      }
     },
     allAuthors: () => Author.find({}),
     me: (root, args, context) => {

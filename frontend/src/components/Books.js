@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { gql } from 'apollo-boost'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery, useLazyQuery } from '@apollo/react-hooks'
 
 export const ALL_BOOKS = gql`
+query getBooks($genre: String)
 {
-  allBooks  {
+  allBooks(genre: $genre)  {
     title
     author {
       name
@@ -13,18 +14,54 @@ export const ALL_BOOKS = gql`
   }
 }
 `
+
+export const ALL_GENRES = gql`
+{
+  allBooks {
+    genres
+  }
+}
+`
+
+
 const Books = (props) => {
-  const result = useQuery(ALL_BOOKS)
+  const [getBooks, { called, loading, data }]  = useLazyQuery(ALL_BOOKS, {
+      fetchPolicy: "network-only"
+    });
+
+  const genres = useQuery(ALL_GENRES)
+
+  if(!called)
+  {
+    getBooks()
+    return null
+  }
+
+  const handleGenre = (event, newGenre) => {
+    if(newGenre === '')
+      getBooks()
+    else
+    {
+      console.log('getting with', newGenre)
+      getBooks({ variables: { genre: newGenre } })
+    }
+  }
 
   if (!props.show) {
     return null
   }
 
-  if (result.loading) {
+  if ((called && loading) || genres.loading || !data) {
     return <div>loading...</div>
   }
 
-  const books = result.data.allBooks
+  const books = data.allBooks
+
+  const distinctGenres = new Set()
+
+  console.log(genres)
+  genres.data.allBooks.map(item => item.genres.map(genre => distinctGenres.add(genre)))
+  const genreArray = [...distinctGenres]
 
   return (
     <div>
@@ -50,6 +87,10 @@ const Books = (props) => {
           )}
         </tbody>
       </table>
+      { genreArray.map(thisGenre =>        
+          <button key={thisGenre} onClick={(event) => handleGenre(event, thisGenre)}>{thisGenre}</button>
+      )}
+      <button  onClick={(event) => handleGenre(event, '')}>all genres</button>
     </div>
   )
 }
