@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Authors from './components/Authors'
-import Books, { BOOK_DETAILS } from './components/Books'
+import Books, { BOOK_DETAILS, ALL_BOOKS } from './components/Books'
 import Recommended from './components/Recommended'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
@@ -17,6 +17,7 @@ const NEW_BOOK = gql`
 ${BOOK_DETAILS}
 `
 
+
 const App = () => {
   const [page, setPage] = useState('authors')
   const [user, setUser] = useState(null)
@@ -27,10 +28,25 @@ const App = () => {
     onSubscriptionData: ({ subscriptionData }) => {
       const book = subscriptionData.data.bookAdded
       window.alert('a book ' + book.title + ' by ' + book.author.name + ' has been added' )
+      updateCacheWith(book)
     }
   })
 
   const client = useApolloClient()
+
+  const updateCacheWith = (addedBook) => {
+    const includedIn = (set, object) => 
+      set.map(p => p.id).includes(object.id)  
+  
+    const dataInStore = client.readQuery({ query: ALL_BOOKS })
+    if (!includedIn(dataInStore.allBooks, addedBook)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks : dataInStore.allBooks.concat(addedBook) }
+      })
+    }   
+  }
+  
 
   const handleError = (error) => {
     console.log(error)

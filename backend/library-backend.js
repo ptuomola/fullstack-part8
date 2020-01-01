@@ -4,6 +4,9 @@ const Book = require('./models/Book')
 const Author = require('./models/Author')
 const User = require('./models/User')
 
+const DataLoader = require('dataloader')
+const countLoader = new DataLoader(keys => countsOfBooks(keys))
+
 const { PubSub } = require('apollo-server')
 const pubsub = new PubSub()
 
@@ -23,6 +26,7 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true })
   .catch((error) => {
     console.log('error connection to MongoDB:', error.message)
   })
+
  
 const typeDefs = gql`
   type Author {
@@ -84,14 +88,41 @@ const typeDefs = gql`
     ): Token
   }
 `
- 
+
+
+const countsOfBooks = (authors) => 
+  Author.aggregate([
+    { $match: 
+        { _id: { $in: authors } }
+    },
+    { $lookup: {
+        'from': 'books', 
+        'localField': '_id', 
+        'foreignField': 'author', 
+        'as': 'book'
+      }
+    }, {
+      $unwind: {
+        'path': '$book'
+      }
+    }, {
+      $group: {
+        _id: '$_id', 
+        count: {
+          $sum: 1
+        }
+      }
+    }
+  ]).then(
+    res => res.map(author => author.count)
+  )
+
 const resolvers = {
   Query: {
     hello: () => { return "world" },
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
-      console.log('called with', args)
       if(args.author) 
       {
         const authorObject = await Author.findOne({ name: args.author })
@@ -117,9 +148,8 @@ const resolvers = {
     }
   },
   Author: {
-    bookCount: (root) => {
-      console.log(root)
-      return Book.collection.countDocuments({ author: root._id })
+    bookCount: async (root) => {
+      return await countLoader.load(root._id)
     }
   },
   Book: {
@@ -165,7 +195,6 @@ const resolvers = {
       }
 
       const author = await Author.findOne({ name: args.name })
-      console.log('author found', author)
 
       if(typeof author === 'undefined') 
         return null

@@ -34,9 +34,7 @@ export const ALL_GENRES = gql`
 
 
 const Books = (props) => {
-  const [getBooks, { called, loading, data }]  = useLazyQuery(ALL_BOOKS, {
-      fetchPolicy: "network-only"
-    });
+  const [getBooks, { called, loading, data }]  = useLazyQuery(ALL_BOOKS);
 
   const genres = useQuery(ALL_GENRES)
   const [genre, setGenre] = useState('')

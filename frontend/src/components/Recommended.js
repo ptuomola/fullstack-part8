@@ -3,9 +3,7 @@ import { useLazyQuery } from '@apollo/react-hooks'
 import { ALL_BOOKS } from './Books'
 
 const Recommended = (props) => {
-const [getBooks, { called, loading, data }]  = useLazyQuery(ALL_BOOKS, {
-      fetchPolicy: "network-only"
-    });
+const [getBooks, { called, loading, data }]  = useLazyQuery(ALL_BOOKS)
 
   if (!props.show) {
     return null

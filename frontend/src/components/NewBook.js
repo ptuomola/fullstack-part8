@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useMutation } from '@apollo/react-hooks'
 import { ALL_AUTHORS } from './Authors'
-import { ALL_BOOKS, BOOK_DETAILS } from './Books'
+import { BOOK_DETAILS } from './Books'
 import { gql } from 'apollo-boost'
 
 const CREATE_BOOK = gql`
@@ -28,7 +28,7 @@ const NewBook = (props) => {
 
   const [addBook] = useMutation(CREATE_BOOK, {
     onError: props.handleError,
-    refetchQueries: [{ query: ALL_AUTHORS}, { query: ALL_BOOKS }]
+    refetchQueries: [{ query: ALL_AUTHORS}]
   })
   
   if (!props.show) {
