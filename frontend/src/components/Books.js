@@ -2,17 +2,26 @@ import React, { useState } from 'react'
 import { gql } from 'apollo-boost'
 import { useQuery, useLazyQuery } from '@apollo/react-hooks'
 
+export const BOOK_DETAILS = gql`
+fragment BookDetails on Book {
+  id
+  title
+  author {
+    name
+  }
+  published
+  genres
+}
+`
+
 export const ALL_BOOKS = gql`
 query getBooks($genre: String)
 {
   allBooks(genre: $genre)  {
-    title
-    author {
-      name
-    }
-    published
+    ...BookDetails
   }
 }
+${BOOK_DETAILS}
 `
 
 export const ALL_GENRES = gql`

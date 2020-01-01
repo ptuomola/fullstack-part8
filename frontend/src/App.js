@@ -1,16 +1,34 @@
 import React, { useState } from 'react'
 import Authors from './components/Authors'
-import Books from './components/Books'
+import Books, { BOOK_DETAILS } from './components/Books'
 import Recommended from './components/Recommended'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
-import { useApolloClient } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
+import { useApolloClient, useSubscription } from '@apollo/react-hooks'
+
+const NEW_BOOK = gql`
+  subscription {
+    bookAdded {
+      ...BookDetails
+    }
+  }
+  
+${BOOK_DETAILS}
+`
 
 const App = () => {
   const [page, setPage] = useState('authors')
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
+
+  useSubscription(NEW_BOOK, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      const book = subscriptionData.data.bookAdded
+      window.alert('a book ' + book.title + ' by ' + book.author.name + ' has been added' )
+    }
+  })
 
   const client = useApolloClient()
 

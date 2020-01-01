@@ -1,20 +1,6 @@
 import React from 'react'
-import { gql } from 'apollo-boost'
 import { useLazyQuery } from '@apollo/react-hooks'
-
-export const ALL_BOOKS = gql`
-query getBooks($genre: String)
-{
-  allBooks(genre: $genre)  {
-    title
-    author {
-      name
-    }
-    published
-  }
-}
-`
-
+import { ALL_BOOKS } from './Books'
 
 const Recommended = (props) => {
 const [getBooks, { called, loading, data }]  = useLazyQuery(ALL_BOOKS, {
