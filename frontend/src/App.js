@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
+import Recommended from './components/Recommended'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import { useApolloClient } from '@apollo/react-hooks'
 
 const App = () => {
   const [page, setPage] = useState('authors')
+  const [user, setUser] = useState(null)
   const [token, setToken] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
 
@@ -24,6 +26,7 @@ const App = () => {
     setToken(null)
     localStorage.clear()
     client.resetStore()
+    setUser(null)
   }
 
   return (
@@ -34,6 +37,7 @@ const App = () => {
         { token ? 
         <>
         <button onClick={() => setPage('add')}>add book</button>
+        <button onClick={() => setPage('recommend')}>recommend</button>
         <button onClick={logout}>logout</button>
         </>
         :
@@ -60,7 +64,11 @@ const App = () => {
       />
 
       <LoginForm
-        show={page === 'login'} handleError={handleError} setToken={setToken} setPage={setPage}
+        show={page === 'login'} handleError={handleError} setToken={setToken} setPage={setPage} setUser={setUser}
+      />
+
+      <Recommended
+        show={page === 'recommend'} user={user}
       />
 
     </div>

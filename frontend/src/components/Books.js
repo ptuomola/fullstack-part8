@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { gql } from 'apollo-boost'
 import { useQuery, useLazyQuery } from '@apollo/react-hooks'
 
@@ -30,6 +30,7 @@ const Books = (props) => {
     });
 
   const genres = useQuery(ALL_GENRES)
+  const [genre, setGenre] = useState('')
 
   if(!called)
   {
@@ -38,11 +39,11 @@ const Books = (props) => {
   }
 
   const handleGenre = (event, newGenre) => {
+    setGenre(newGenre)
     if(newGenre === '')
       getBooks()
     else
     {
-      console.log('getting with', newGenre)
       getBooks({ variables: { genre: newGenre } })
     }
   }
@@ -59,14 +60,19 @@ const Books = (props) => {
 
   const distinctGenres = new Set()
 
-  console.log(genres)
   genres.data.allBooks.map(item => item.genres.map(genre => distinctGenres.add(genre)))
   const genreArray = [...distinctGenres]
 
   return (
     <div>
       <h2>books</h2>
-
+      <p></p>
+      { genre !== '' ? 
+      <div>in genre <em><b>{genre}</b></em>
+            <p></p>
+      </div>
+      : ''
+      }
       <table>
         <tbody>
           <tr>
